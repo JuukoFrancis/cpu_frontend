@@ -4,7 +4,8 @@ function App() {
   const [algorithm, setAlgorithm] = useState("");
   return (
     <>
-      <div className="min-h-screen bg-blue-50 flex flex-col items-center justify-center py-10 px-4 sm:px-6 md:px-8">
+      {/* <div className="min-h-screen bg-blue-50 flex flex-col items-center justify-center py-10 px-4 sm:px-6 md:px-8"> */}
+      <div className="h-1/5 bg-blue-50 flex flex-col items-center justify-center py-10 px-4 sm:px-6 md:px-8">
         <h1 className="text-4xl text-blue-600 font-semibold mb-6">
           CPU SCHEDULING ALGORITHMS
         </h1>
@@ -171,7 +172,7 @@ function FirstComeFirstServe({ algorithm }) {
   }
 
   return (
-    <div className="min-h-screen bg-blue-50 flex flex-col items-center justify-center py-10 px-4 sm:px-6 md:px-8">
+    <div className="min-h-screen bg-blue-50 flex flex-col items-center justify-center py-5 px-4 sm:px-2 md:px-8">
       <h2 className="text-2xl font-semibold text-blue-800 mb-6 text-center">
         First Come First Serve Algorithm
       </h2>
