@@ -679,7 +679,7 @@ const RoundRobinScheduler = ({ algorithm }) => {
     setFinish(data);
     setRun(true);
   }
-
+  console.log(finish);
   return (
     <div className="p-4 max-w-4xl mx-auto">
       <h2 className="text-3xl font-bold mb-6 text-center text-blue-600">
@@ -709,7 +709,6 @@ const RoundRobinScheduler = ({ algorithm }) => {
           Add Process
         </button>
       </div>
-
       {/* Quantum Input */}
       <div className="mb-6">
         <input
@@ -720,7 +719,6 @@ const RoundRobinScheduler = ({ algorithm }) => {
           className="border p-3 rounded-md w-full text-blue-800 focus:ring-2 focus:ring-blue-500"
         />
       </div>
-
       {/* Processes Table */}
       {processes.length > 0 && (
         <div className="mb-6 overflow-x-auto">
@@ -742,7 +740,6 @@ const RoundRobinScheduler = ({ algorithm }) => {
           </table>
         </div>
       )}
-
       {/* Run Button */}
       {processes.length > 1 && (
         <button
@@ -753,7 +750,6 @@ const RoundRobinScheduler = ({ algorithm }) => {
           Run Processes
         </button>
       )}
-
       {/* Clear Button */}
       {run && (
         <div className="mt-6 text-center">
@@ -765,7 +761,6 @@ const RoundRobinScheduler = ({ algorithm }) => {
           </button>
         </div>
       )}
-
       {/* Final Process Table */}
       {run && (
         <div className="mb-6 overflow-x-auto">
@@ -796,12 +791,25 @@ const RoundRobinScheduler = ({ algorithm }) => {
           Average Waiting Time: {avgWaitingTime.toFixed(2)}
         </p>
       )}
-
       {/* Gantt Chart */}
       {run && (
         <>
-          <p className="mt-6 text-lg text-blue-800">Gantt Chart:</p>
-          <GanttChart processes={processes} />
+          <div className="w-full my-6">
+            {/* Gantt Blocks */}
+            <div className="flex border border-gray-700 h-14 bg-gray-300">
+              {finish?.map((process) => (
+                <div
+                  key={process.start}
+                  className="flex items-center justify-center border-r border-gray-700 text-gray-800 font-semibold"
+                  style={{
+                    flex: process.end,
+                  }}
+                >
+                  P{process.pid}
+                </div>
+              ))}
+            </div>
+          </div>
         </>
       )}
     </div>
