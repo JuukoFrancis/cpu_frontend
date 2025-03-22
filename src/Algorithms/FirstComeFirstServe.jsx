@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { handleFinish } from "./api";
 // import Gantt from "./Gantt";
+import React from "react";
 
 function FirstComeFirstServe({ algorithm }) {
   const [burstInput, setBurstInput] = useState("");
@@ -8,7 +9,7 @@ function FirstComeFirstServe({ algorithm }) {
   const [initialProcessses, setInitialProcessses] = useState([]);
   const [processId, setProcessId] = useState("");
   const [run, setRun] = useState(false);
-  console.log(initialProcessses);
+
   const averageWaitingTime =
     finish.reduce((acc, cur) => acc + cur.waiting_time, 0) /
     initialProcessses.length;
@@ -19,12 +20,10 @@ function FirstComeFirstServe({ algorithm }) {
 
   async function handle() {
     const data = await handleFinish(initialProcessses, algorithm);
-
     setFinish(data);
-
     setRun(true);
   }
-  console.log(finish);
+
   function handleAddProcess() {
     if (!burstInput) return; // Do nothing if the input is empty
     const bool = initialProcessses.find((item) => item.id === processId);
@@ -40,6 +39,11 @@ function FirstComeFirstServe({ algorithm }) {
     setProcessId("");
   }
 
+  function handleClear() {
+    setFinish([]);
+    setInitialProcessses([]);
+    setRun(false);
+  }
   return (
     <div className="min-h-screen bg-blue-50 flex flex-col items-center justify-center py-10 px-4 sm:px-6 md:px-8">
       <h2 className="text-2xl font-semibold text-blue-800 mb-6 text-center">
@@ -49,14 +53,6 @@ function FirstComeFirstServe({ algorithm }) {
       {/* Initial process Table inputs*/}
 
       <div className="mb-6">
-        {/* <AddProcess
-          processId={processId}
-          setProcessId={setProcessId}
-          handleAddProcess={handleAddProcess}
-          burstInput={burstInput}
-          setBurstInput={setBurstInput}
-        /> */}
-
         <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
           <p>Enter burst time:</p>
 
@@ -114,6 +110,8 @@ function FirstComeFirstServe({ algorithm }) {
       {initialProcessses?.length > 0 && (
         <button onClick={handle}>Run First come</button>
       )}
+      {run && <button onClick={handleClear}>Clear All Processes</button>}
+
       {/* Final Process table */}
 
       {run && (
@@ -142,6 +140,8 @@ function FirstComeFirstServe({ algorithm }) {
 
       {run && <p>AVerage waiting time {averageWaitingTime.toFixed(2)}</p>}
       {run && <p>AVerage Turnaround time {averageTurnTime.toFixed(2)}</p>}
+
+      {/* <GanttChart processes={initialProcessses} /> */}
     </div>
   );
 }
