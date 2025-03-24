@@ -45,7 +45,7 @@ export default App;
 
 // API for data fetching
 export async function handleFinish(initialProcess, algorithm) {
-  const res = await fetch("http://127.0.0.1:8000//api/process", {
+  const res = await fetch("https://cpu-api-5.onrender.com/api/process", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
