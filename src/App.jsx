@@ -299,6 +299,7 @@ function ShortestJobFirstPreemptive({ algorithm }) {
   const [run, setRun] = useState(false);
   const [initialProcess, setInitialProcess] = useState([]);
   const [finish, setFinish] = useState([]);
+  const [finishTimeLine, setFinishTimeLine] = useState([]);
 
   const averageWaitingTime =
     finish?.reduce((acc, cur) => acc + cur.waiting_time, 0) /
@@ -310,12 +311,17 @@ function ShortestJobFirstPreemptive({ algorithm }) {
 
   async function handle() {
     const data = await handleFinish(initialProcess, algorithm);
-    setFinish(data);
+    console.log(data);
+    setFinish(data[0].processes);
+    setFinishTimeLine(data[0].timeline);
     setRun(true);
   }
-
+  console.log(initialProcess);
+  console.log(finish);
+  // console.log(finishTimeLine);
+  // console.log(finishTimeLine);
   function handleAddProcess(burstInput) {
-    if (!burstInput || !arrival_time || !processId) return;
+    if (!burstInput || !processId) return;
     const bool = initialProcess.find((item) => item.id === processId);
     if (bool) return;
     const newProcess = {
@@ -430,16 +436,18 @@ function ShortestJobFirstPreemptive({ algorithm }) {
             <thead>
               <tr className="bg-blue-100">
                 <th className="border p-2 text-left">Process ID</th>
-                <th className="border p-2 text-left">Waiting Time</th>
-                <th className="border p-2 text-left">Turnaround Time</th>
+                <th className="border p-2 text-left">Arrival Time</th>
+                <th className="border p-2 text-left">Burst Time</th>
+                <th className="border p-2 text-left">End Time</th>
               </tr>
             </thead>
             <tbody>
               {finish?.map((process) => (
                 <tr key={process.id} className="hover:bg-gray-50">
                   <td className="border p-2">P{process.id}</td>
-                  <td className="border p-2">{process.waiting_time}</td>
-                  <td className="border p-2">{process.turnaround_time}</td>
+                  <td className="border p-2">{process.arrival_time}</td>
+                  <td className="border p-2">{process.burst_time}</td>
+                  <td className="border p-2">{process.completion_time}</td>
                 </tr>
               ))}
             </tbody>
@@ -458,7 +466,26 @@ function ShortestJobFirstPreemptive({ algorithm }) {
         </div>
       )}
 
-      {run && <GanttChart processes={initialProcess} />}
+      {run && (
+        <>
+          <div className="w-full my-6">
+            {/* Gantt Blocks */}
+            <div className="flex border border-gray-700 h-14 bg-gray-300">
+              {finishTimeLine?.map((process) => (
+                <div
+                  key={process.start}
+                  className="flex items-center justify-center border-r border-gray-700 text-gray-800 font-semibold"
+                  style={{
+                    flex: process.end,
+                  }}
+                >
+                  P{process.pid}({process.start_time} - {process.end_time})
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
