@@ -315,7 +315,7 @@ function ShortestJobFirstPreemptive({ algorithm }) {
   }
 
   function handleAddProcess(burstInput) {
-    if (!burstInput || !arrival_time || !processId) return;
+    if (!burstInput || arrival_time < 0 || !processId) return;
     const bool = initialProcess.find((item) => item.id === processId);
     if (bool) return;
     const newProcess = {
