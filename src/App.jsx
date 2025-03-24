@@ -45,7 +45,7 @@ export default App;
 
 // API for data fetching
 export async function handleFinish(initialProcess, algorithm) {
-  const res = await fetch("https://cpu-api-5.onrender.com/api/process", {
+  const res = await fetch("http://127.0.0.1:8000//api/process", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -479,7 +479,7 @@ function ShortestJobFirstPreemptive({ algorithm }) {
                     flex: process.end,
                   }}
                 >
-                  P{process.pid}({process.start_time} - {process.end_time})
+                  P{process.id} ({process.start_time} - {process.end_time})
                 </div>
               ))}
             </div>
@@ -853,6 +853,7 @@ function PrioritySchedulingPreemptive({ algorithm }) {
   const [priority, setPriority] = useState("");
   const [processes, setProcesses] = useState([]);
   const [finish, setFinish] = useState([]);
+  const [finishTimeLine, setFinishTimeLine] = useState([]);
   const [run, setRun] = useState(false);
 
   const averageWaitingTime =
@@ -864,9 +865,12 @@ function PrioritySchedulingPreemptive({ algorithm }) {
 
   async function handle() {
     const data = await handleFinish(processes, algorithm);
-    setFinish(data);
+    setFinish(data[1]);
+    setFinishTimeLine(data[0]);
     setRun(true);
   }
+  console.log(finish);
+  console.log(finishTimeLine);
 
   function handleClearProcess() {
     setProcesses([]);
@@ -882,7 +886,7 @@ function PrioritySchedulingPreemptive({ algorithm }) {
       id: processId,
       arrival_time: arrivalTime,
       burst_time: burstInput,
-      Priority: priority,
+      priority: priority,
     };
     setProcesses((id) => [...id, newProcess]);
     setBurstInput("");
@@ -957,7 +961,7 @@ function PrioritySchedulingPreemptive({ algorithm }) {
                   <td className="border p-3">P{process.id}</td>
                   <td className="border p-3">{process.arrival_time}</td>
                   <td className="border p-3">{process.burst_time}</td>
-                  <td className="border p-3">{process.Priority}</td>
+                  <td className="border p-3">{process.priority}</td>
                 </tr>
               ))}
             </tbody>
@@ -995,16 +999,20 @@ function PrioritySchedulingPreemptive({ algorithm }) {
             <thead>
               <tr className="bg-blue-100">
                 <th className="border p-3 text-left">Process ID</th>
-                <th className="border p-3 text-left">Waiting Time</th>
-                <th className="border p-3 text-left">Turnaround Time</th>
+                <th className="border p-3 text-left">Arrival Time</th>
+                <th className="border p-3 text-left">Burst Time</th>
+                <th className="border p-3 text-left">End Time</th>
+                <th className="border p-3 text-left">Priority</th>
               </tr>
             </thead>
             <tbody>
               {finish?.map((process) => (
                 <tr key={process.id} className="hover:bg-gray-50">
                   <td className="border p-3">P{process.id}</td>
-                  <td className="border p-3">{process.waiting_time}</td>
-                  <td className="border p-3">{process.turnaround_time}</td>
+                  <td className="border p-3">{process.arrival_time}</td>
+                  <td className="border p-3">{process.burst_time}</td>
+                  <td className="border p-3">{process.completion_time}</td>
+                  <td className="border p-3">{process.priority}</td>
                 </tr>
               ))}
             </tbody>
@@ -1017,9 +1025,54 @@ function PrioritySchedulingPreemptive({ algorithm }) {
           </div>
 
           {/* Gantt Chart */}
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center overflow-x-auto">
             <p className="text-lg text-blue-800">Gantt Chart</p>
-            <GanttChart processes={processes} />
+            {/* <GanttChart processes={processes} /> */}
+            <div className="w-full my-6">
+              {/* Gantt Blocks */}
+              <div className="flex border border-gray-700 h-14 bg-gray-300">
+                {finishTimeLine?.map((process) => (
+                  <div
+                    key={process.id}
+                    className="flex items-center justify-center border-r border-gray-700 text-gray-800 font-semibold"
+                    style={{
+                      flex: process.burst_time,
+                    }}
+                  >
+                    P{process.id} ({process.start_time} - {process.end_time})
+                  </div>
+                ))}
+              </div>
+
+              {/* Timeline */}
+              <div className="flex justify-between mt-2 text-sm text-gray-800">
+                {finishTimeLine
+                  ?.reduce(
+                    (acc, process) => {
+                      const last = acc.length ? acc[acc.length - 1] : 0;
+                      acc.push(last + process.burst_time);
+                      return acc;
+                    },
+                    [0]
+                  )
+                  ?.map((time, index) => (
+                    <div
+                      key={index}
+                      className="absolute"
+                      style={{
+                        left: `${
+                          (time /
+                            processes.reduce(
+                              (acc, process) => acc + process.burst_time,
+                              0
+                            )) *
+                          100
+                        }%`, // Position relative to total width
+                      }}
+                    ></div>
+                  ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -1119,7 +1172,7 @@ function PriorityScheduling({ algorithm }) {
               <tr className="bg-blue-100">
                 <th className="border p-3 text-left">Process ID</th>
                 <th className="border p-3 text-left">Burst Time</th>
-                <th className="border p-3 text-left">Priority Time</th>
+                <th className="border p-3 text-left">Priority </th>
               </tr>
             </thead>
             <tbody>
