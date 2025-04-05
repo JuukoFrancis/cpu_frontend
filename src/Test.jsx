@@ -1091,7 +1091,6 @@ function PrioritySchedulingPreemptive({ algorithm }) {
       <div className="mb-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <div className="flex items-center">
-            <span className="text-gray-300 mr-2">Process Id:</span>
             <input
               type="number"
               value={processId}
